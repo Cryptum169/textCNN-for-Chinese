@@ -1,3 +1,6 @@
 __pycache__
-data/training_data
-model/*
+data/
+model/doc2vec/*
+.vscode
+*.hdf5
+src/spam_filtering

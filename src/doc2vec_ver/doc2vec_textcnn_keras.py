@@ -4,13 +4,12 @@ from keras.callbacks import ModelCheckpoint
 from keras.optimizers import Adam
 from keras.models import Model
 from sklearn.model_selection import train_test_split
-from data_helpers import load_data_doc2vec
-import data_helpers
+import data_helpers_doc2vec as data_helpers
 import json
 
 print('Loading data')
 sentences, labels = data_helpers.load_data_and_labels_doc2vec()
-x, y = load_data_doc2vec(sentences, labels)
+x, y = data_helpers.load_data_doc2vec(sentences, labels)
 X_train, X_test, y_train, y_test = train_test_split(
     x, y, test_size=0.1, random_state=42)
 
@@ -21,14 +20,14 @@ sequence_length = x.shape[1]  # 342 Used for Prediction
 # # print(sequence_length)
 # # vocabulary_size = max_length  # 81867 Used for Prediction
 # # print(vocabulary_size)
-embedding_dim = 100
+embedding_dim = 400
 
 filter_sizes = [3, 4, 5]
 num_filters = 512
 drop = 0.5
 
 epochs = 5
-batch_size = 30
+batch_size = 32
 
 # this returns a tensor
 print("Creating Model...")
@@ -56,7 +55,7 @@ output = Dense(units=4, activation='softmax')(dropout)
 
 # this creates a model that includes
 model = Model(inputs=inputs, outputs=output)
-filepath = 'keras_model/model_doc2vec.hdf5'
+filepath = 'model/textCNN_with_doc2vec/model_doc2vec.hdf5'
 checkpoint = ModelCheckpoint(filepath,
                              monitor='acc', verbose=1, save_best_only=True, mode='auto')
 adam = Adam(lr=1e-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
@@ -65,24 +64,3 @@ model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
 print("Traning Model...")
 
 model.fit(X_train,y_train, batch_size=batch_size, epochs=epochs, verbose=1 ,callbacks=[checkpoint],validation_data=(X_test, y_test))  # starts training
-
-x, y = load_data_doc2vec(sentences, labels)
-X_train, X_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.1, random_state=42)
-
-model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1,
-          callbacks=[checkpoint], validation_data=(X_test, y_test))  # starts training
-
-x, y = load_data_doc2vec(sentences, labels)
-X_train, X_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.1, random_state=42)
-
-model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1,
-          callbacks=[checkpoint], validation_data=(X_test, y_test))  # starts training
-
-x, y = load_data_doc2vec(sentences, labels)
-X_train, X_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.1, random_state=42)
-
-model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1,
-          callbacks=[checkpoint], validation_data=(X_test, y_test))  # starts training

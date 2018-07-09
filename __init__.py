@@ -1,8 +1,13 @@
 from src.textCNN import textCNN
 from src.data_helpers import load_data
+import json
 
-print('Loading data')
-x, y, vocabulary, vocabulary_inv = load_data('data/training_data/')
+x, y, vocabulary, vocabulary_inv = load_data('data/Spam_train/')
+
+with open('vocabulary_spam.json', 'w') as f:
+    json.dump(vocabulary, f)
+
+print("Vocabulary Size is {}".format(len(vocabulary_inv)))
 
 classifier = textCNN(
     sequence_length=x.shape[1],
@@ -10,5 +15,10 @@ classifier = textCNN(
     num_classifier=y.shape[1]
 )
 
+del vocabulary
+del vocabulary_inv
+
 classifier.construct_model()
-classifier.train(x, y, checkpoint_path='model/textCNN/try.hdf5')
+classifier.train(
+    x, y, checkpoint_path='model/textCNN/spam_train.hdf5', epochs=20)
+

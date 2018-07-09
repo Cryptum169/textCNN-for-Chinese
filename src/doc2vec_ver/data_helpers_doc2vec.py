@@ -1,22 +1,56 @@
+import random
+import jieba
+import progressbar
+from gensim.models import Doc2Vec
+import numpy as np
 
-
-def load_data_and_labels_doc2vec(econ='data/training_data/bizList.txt',
-                                 dangshi='data/training_data/dangshiList.txt', ent='data/training_data/entList.txt',
-                                 sports='data/training_data/sportsList.txt'):
+def load_data_and_labels_doc2vec(econ='data/Sogou/training_data/bizList.txt',
+                                 dangshi='data/Sogou/training_data/dangshiList.txt', ent='data/Sogou/training_data/entList.txt',
+                                 sports='data/Sogou/training_data/sportsList.txt'):
     print('Function reserved for doc2vec')
     econList = list(open(econ, "r").readlines())
-    econList = [s.split('。') for s in econList]
-    econList = [jieba.lcut(seg.strip()) for s in econList for seg in s]
+    econList = [s.split('。')[:-1] for s in econList]
+    res = []
+    for s in econList:
+        currList = []
+        for seg in s:
+            currList.append(jieba.lcut(seg.strip()))
+        res.append(currList)
+    econList = res
+    print('{} data from econ sec'.format(len(econList)))
+
     dangshiList = list(open(dangshi, "r").readlines())
     dangshiList = [s.split('。') for s in dangshiList]
-    dangshiList = [jieba.lcut(seg.strip()) for s in dangshiList for seg in s]
+    res = []
+    for s in dangshiList:
+        currList = []
+        for seg in s:
+            currList.append(jieba.lcut(seg.strip()))
+        res.append(currList)
+    dangshiList = res
+    print('{} data from dangshi sec'.format(len(dangshiList)))
+
     entList = list(open(ent, "r").readlines())
     entList = [s.split('。') for s in entList]
-    entList = [jieba.lcut(seg.strip()) for s in entList for seg in s]
+    res = []
+    for s in entList:
+        currList = []
+        for seg in s:
+            currList.append(jieba.lcut(seg.strip()))
+        res.append(currList)
+    entList = res
+    print('{} data from Entertainment sec'.format(len(entList)))
+
     sportsList = list(open(sports, "r").readlines())
     sportsList = [s.split('。') for s in sportsList]
-    sportsList = [jieba.lcut(seg.strip())
-                  for s in sportsList for seg in s]
+    res = []
+    for s in sportsList:
+        currList = []
+        for seg in s:
+            currList.append(jieba.lcut(seg.strip()))
+        res.append(currList)
+    sportsList = res
+    print('{} data from Sports sec'.format(len(sportsList)))
 
     x_text = econList + dangshiList + entList + sportsList
     # x_text = [cleanStr(text) for text in x_text]
@@ -25,6 +59,8 @@ def load_data_and_labels_doc2vec(econ='data/training_data/bizList.txt',
     dangshiLabel = [[0, 1, 0, 0] for _ in dangshiList]
     entLabel = [[0, 0, 1, 0] for _ in entList]
     sportLabel = [[0, 0, 0, 1] for _ in sportsList]
+
+    print('x_text len: {}'.format(len(x_text)))
 
     y = np.concatenate(
         [econLabel, dangshiLabel, entLabel, sportLabel], 0)
@@ -82,15 +118,16 @@ def load_data_doc2vec(sentences=None, labels=None):
             sentences, labels = load_data_and_labels_doc2vec()
     except:
         sentences, labels = load_data_and_labels_doc2vec()
-    testCase = 10
+    testCase = 5405
     sentences_padded = pad_sentences(sentences)
+    print('There are {} samples'.format(len(sentences_padded)))
     c = list(zip(sentences_padded, labels))
     random.shuffle(c)
     sentences_padded, labels = zip(*c)
     sentences_padded = sentences_padded[:testCase]
     labels = labels[:testCase]
     print('Loading Gensim Model')
-    model = Doc2Vec.load('model/doc2vec/d2v.model')
+    model = Doc2Vec.load('d2v.model')
     print('Generating Gensim Vector')
     totalDoc = []
     i = 0
@@ -98,13 +135,15 @@ def load_data_doc2vec(sentences=None, labels=None):
         for eachDocument in sentences_padded:
             currDoc = []
             for eachSentence in eachDocument:
+                model.random.seed(0)
                 currDoc.append(model.infer_vector(eachSentence))
             currDoc = np.array(currDoc)
             totalDoc.append(currDoc)
             i += 1
             bar.update(i)
     x = np.array(totalDoc)
-    x.resize(x.shape[0], 262, 100, 1)
+    print(x.shape)
+    x.resize(x.shape[0], x.shape[1], x.shape[2], 1)
     print(x.shape)
     y = np.array(labels)
     return [x, y]
@@ -132,6 +171,7 @@ def load_data_doc2vec_1D(sentences=None, labels=None):
     print('Generating Gensim Vector')
     totalDoc = []
     i = 0
+    exit()
     with progressbar.ProgressBar(max_value=len(sentences_padded)) as bar:
         for eachDocument in sentences_padded:
             temp = np.array(model.infer_vector(eachDocument))

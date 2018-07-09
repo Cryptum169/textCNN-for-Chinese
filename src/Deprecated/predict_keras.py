@@ -43,7 +43,6 @@ def load_text_and_label():
 def load_eval_dataset():
     with open('my_dict.json', 'r') as fp:
         dictionary = json.load(fp)
-
     [corpus, labels] = load_text_and_label()
     data = pad_sentences(corpus)
     x, y = dh.build_input_data(data, labels, dictionary)

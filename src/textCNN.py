@@ -4,6 +4,8 @@ from keras.layers import Reshape, Flatten, Dropout, Concatenate
 from keras.callbacks import ModelCheckpoint
 from keras.optimizers import Adam
 from keras.models import Model
+import numpy as np
+import keras
 import os
 
 
@@ -26,14 +28,19 @@ class textCNN():
             self.filter_sizes = filter_sizes
             self.drop = drop
             self.resume_training = False
+            self.model = None
         else:
+            print('Loading Model from {}'.format(directory))
             self.model = keras.models.load_model(directory)
             self.resume_training = True
             self.directory = directory
-            self.sequence_length = self.model.layers[0].get_output_at(
-                0).get_shape().as_list()[1]
+            self.sequence_length = int(self.model.layers[0].get_output_at(
+                0).get_shape().as_list()[1])
 
     def construct_model(self):
+        if not self.model == None:
+            raise Exception('Trying to construct new model in the same object while we already have one')
+
         # Input Layer
         print('Creating Model')
         inputs = Input(shape=(self.sequence_length,), dtype='int32')
@@ -88,22 +95,31 @@ class textCNN():
         print(self.model.summary())
 
     def train(self, x_data, y_data, checkpoint_path=-1, batch_size=32, epochs=50):
-        print('Preparing DataSet')
-        # sequence_length =
+
+        # Check for new
+        if x_data.shape[1] > self.sequence_length:
+            x_data = np.array([x[:int(self.sequence_length)] for x in x_data])
+
         X_train, X_test, y_train, y_test = train_test_split(
             x_data, y_data, test_size=0.1, random_state=42)
 
-        print('Checking Checkpoint path')
+        # Questionable Code block here, fix later
         if checkpoint_path == -1:
             print('No Checkpoint path directory found, creating new one')
             checkpoint_path = 'model/textCNN'
             os.mkdir(checkpoint_path)
             checkpoint_path += '/classification.hdf5'
 
-        print('Creating Checkpoint')
         checkpoint = ModelCheckpoint(
             checkpoint_path, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
+
 
         print('Start Training Model')
         self.model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1,
                        callbacks=[checkpoint], validation_data=(X_test, y_test))
+
+    def predict(self, x_data, y_data):
+        if self.model == None:
+            raise Exception('Trying to predict with no model')
+        
+        

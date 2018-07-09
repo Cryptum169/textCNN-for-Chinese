@@ -7,6 +7,12 @@ from collections import Counter
 from gensim.models.doc2vec import Doc2Vec
 import random
 import os
+import re
+
+def clean_s(string):
+    string = string.replace('。','')
+    string = string.replace('，','')
+    return string
 
 # Vanilla
 def load_data_and_labels(econ='data/training_data/bizList.txt',
@@ -46,7 +52,7 @@ def load_multiple_data_and_labels(directory='data/training_data/'):
     counter = 0
     for eachEntry in data_set:
         tempList = list(open(eachEntry, "r").readlines())
-        tempList = [jieba.lcut(s.strip()) for s in tempList]
+        tempList = [jieba.lcut(clean_s(s.strip())) for s in tempList]
         currentLabel = [0] * counter + [1] + [0] * (classifier - 1 - counter)
         print('Entry file:{} marked with label{}'.format(eachEntry, currentLabel))
         tempLabel = [currentLabel for _ in tempList]
