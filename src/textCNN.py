@@ -8,7 +8,6 @@ import numpy as np
 import keras
 import os
 
-
 class textCNN():
     def __init__(self, sequence_length=200,
                  vocabulary_size=-1,
@@ -121,5 +120,3 @@ class textCNN():
     def predict(self, x_data, y_data):
         if self.model == None:
             raise Exception('Trying to predict with no model')
-        
-        

@@ -2,9 +2,9 @@ from src.textCNN import textCNN
 from src.data_helpers import load_data
 import json
 
-x, y, vocabulary, vocabulary_inv = load_data('data/Spam_train/')
+x, y, vocabulary, vocabulary_inv = load_data('data/Sogou/training_data')
 
-with open('vocabulary_spam.json', 'w') as f:
+with open('model/textCNN/dict/vocabulary_spam.json', 'w') as f:
     json.dump(vocabulary, f)
 
 print("Vocabulary Size is {}".format(len(vocabulary_inv)))
@@ -19,6 +19,5 @@ del vocabulary
 del vocabulary_inv
 
 classifier.construct_model()
-classifier.train(
-    x, y, checkpoint_path='model/textCNN/spam_train.hdf5', epochs=20)
+classifier.train(x, y, checkpoint_path='model/textCNN/classification.hdf5', epochs=20)
 

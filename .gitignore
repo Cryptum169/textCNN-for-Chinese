@@ -1,5 +1,5 @@
 __pycache__
-data/
+data/Sogou/training_data
 model/doc2vec/*
 .vscode
 *.hdf5
