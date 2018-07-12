@@ -1,0 +1,1 @@
+textCNN with doc2vec model inputs are stored here 

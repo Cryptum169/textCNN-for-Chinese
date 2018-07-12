@@ -8,6 +8,7 @@ import numpy as np
 import keras
 import os
 
+
 class textCNN():
     def __init__(self, sequence_length=200,
                  vocabulary_size=-1,
@@ -16,7 +17,9 @@ class textCNN():
                  filter_sizes=[3, 4, 5],
                  num_classifier=2,
                  drop=0.5,
-                 directory=None):
+                 directory=None,
+                 doc2vec = False):
+        self.doc2vec = doc2vec
         if directory == None:
             print('Initializing Parameters')
             self.sequence_length = sequence_length
@@ -38,32 +41,52 @@ class textCNN():
 
     def construct_model(self):
         if not self.model == None:
-            raise Exception('Trying to construct new model in the same object while we already have one')
+            raise Exception(
+                'Trying to construct new model in the same object while we already have one')
 
         # Input Layer
         print('Creating Model')
-        inputs = Input(shape=(self.sequence_length,), dtype='int32')
+        
         # Embedding Layer
-        embedding = Embedding(input_dim=self.vocabulary_size,
-                              output_dim=self.embedding_dim, input_length=self.sequence_length)(inputs)
+        if not self.doc2vec:
+            inputs = Input(shape=(self.sequence_length,), dtype='int32')
+            embedding = Embedding(input_dim=self.vocabulary_size,
+                                output_dim=self.embedding_dim,
+                                input_length=self.sequence_length)(inputs)
 
-        # Check to make sure dimension matches
-        reshape = Reshape(
-            (self.sequence_length, self.embedding_dim, 1))(embedding)
+            # Check to make sure dimension matches
+            reshape = Reshape(
+                (self.sequence_length, self.embedding_dim, 1))(embedding)
 
-        # Convolutional layers
-        conv_0 = Conv2D(self.num_filters,
-                        kernel_size=(
-                            self.filter_sizes[0], self.embedding_dim), padding='valid',
-                        kernel_initializer='normal', activation='relu')(reshape)
-        conv_1 = Conv2D(self.num_filters,
-                        kernel_size=(
-                            self.filter_sizes[1], self.embedding_dim), padding='valid',
-                        kernel_initializer='normal', activation='relu')(reshape)
-        conv_2 = Conv2D(self.num_filters,
-                        kernel_size=(
-                            self.filter_sizes[2], self.embedding_dim), padding='valid',
-                        kernel_initializer='normal', activation='relu')(reshape)
+            # Convolutional layers
+            conv_0 = Conv2D(self.num_filters,
+                            kernel_size=(
+                                self.filter_sizes[0], self.embedding_dim), padding='valid',
+                            kernel_initializer='normal', activation='relu')(reshape)
+            conv_1 = Conv2D(self.num_filters,
+                            kernel_size=(
+                                self.filter_sizes[1], self.embedding_dim), padding='valid',
+                            kernel_initializer='normal', activation='relu')(reshape)
+            conv_2 = Conv2D(self.num_filters,
+                            kernel_size=(
+                                self.filter_sizes[2], self.embedding_dim), padding='valid',
+                            kernel_initializer='normal', activation='relu')(reshape)
+        else: 
+            inputs = Input(
+                shape=(self.sequence_length, self.embedding_dim, 1), dtype='float64')
+            conv_0 = Conv2D(self.num_filters,
+                            kernel_size=(
+                                self.filter_sizes[0], self.embedding_dim), padding='valid',
+                            kernel_initializer='normal', activation='relu')(inputs)
+            conv_1 = Conv2D(self.num_filters,
+                            kernel_size=(
+                                self.filter_sizes[1], self.embedding_dim), padding='valid',
+                            kernel_initializer='normal', activation='relu')(inputs)
+            conv_2 = Conv2D(self.num_filters,
+                            kernel_size=(
+                                self.filter_sizes[2], self.embedding_dim), padding='valid',
+                            kernel_initializer='normal', activation='relu')(inputs)
+
 
         # Pooling layers
         maxpool_0 = MaxPool2D(
@@ -112,11 +135,6 @@ class textCNN():
         checkpoint = ModelCheckpoint(
             checkpoint_path, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
 
-
         print('Start Training Model')
         self.model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1,
                        callbacks=[checkpoint], validation_data=(X_test, y_test))
-
-    def predict(self, x_data, y_data):
-        if self.model == None:
-            raise Exception('Trying to predict with no model')

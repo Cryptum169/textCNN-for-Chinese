@@ -1,0 +1,1 @@
+Vanilla textCNN models are stored here

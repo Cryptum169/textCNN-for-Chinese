@@ -1,0 +1,1 @@
+This contains early version of doc2vec. They're not currently in use.

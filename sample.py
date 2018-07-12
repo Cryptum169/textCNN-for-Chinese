@@ -25,15 +25,7 @@ del vocabulary_inv
 classifier.construct_model()
 classifier.train(x, y, checkpoint_path='model/textCNN/classification.hdf5', epochs = 10)
 
-del classifier
-
-# ## Load an existing Model
-# old_model = textCNN(directory = 'model/textCNN/classification.hdf5')
-
-# # Keep training old model
-# old_model.train(x, y, checkpoint_path='model/textCNN/classification.hdf5', epochs = 1)
-
-# # predict using model
+# predict using model
 
 def load_text_and_label():
     econ = 'data/evaluation_data/econ.txt'
@@ -53,7 +45,7 @@ def pad_sentences(sentences, padding_word="<PAD/>"):
     Pads all sentences to the same length. The length is defined by the longest sentence.
     Returns padded sentences.
     """
-    sequence_length = 342  # as defined by model
+    sequence_length = x.shape[1]  # as defined by model
     padded_sentences = []
     for i in range(len(sentences)):
         sentence = sentences[i]

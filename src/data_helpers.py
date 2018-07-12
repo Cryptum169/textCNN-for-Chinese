@@ -50,6 +50,7 @@ def load_multiple_data_and_labels(directory='data/training_data/'):
     x_text = list()
     y = list()
     counter = 0
+
     for eachEntry in data_set:
         tempList = list(open(eachEntry, "r").readlines())
         tempList = [jieba.lcut(clean_s(s.strip())) for s in tempList]
@@ -59,6 +60,7 @@ def load_multiple_data_and_labels(directory='data/training_data/'):
         y += tempLabel
         x_text += tempList
         counter += 1
+        
     y = np.array(y)
     return [x_text,y]
     

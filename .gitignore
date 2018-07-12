@@ -1,6 +1,8 @@
 __pycache__
-data/Sogou/training_data
+data/Sogou/training_data/*
 model/doc2vec/*
 .vscode
 *.hdf5
 src/spam_filtering
+test.py
+*.zip
