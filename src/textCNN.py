@@ -4,6 +4,7 @@ from keras.layers import Reshape, Flatten, Dropout, Concatenate
 from keras.callbacks import ModelCheckpoint
 from keras.optimizers import Adam
 from keras.models import Model
+import tensorflow
 import numpy as np
 import keras
 import os
