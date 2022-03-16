@@ -1,3 +1,6 @@
+# Notice
+This repository is not being maintained and likely has legacy Keras interface.
+
 # An implementation of textCNN for Chinese with and without gensim Doc2Vec. 
 With pre-trained Doc2Vec model, textCNN's model size shrink from around 200mb to 30 mb. Training speed has increased significantly. On my dataset, textCNN with Doc2Vec implementation is able to get to around 80% accuracy on first epoch, with average step time cost 1ms. Vanilla textCNN will take several more epoch to converge and average step time of 70~ms. 
 
