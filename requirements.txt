@@ -1,6 +1,6 @@
 jieba==0.39
 nltk==3.6.5
-numpy==1.14.5
+numpy==1.22.0
 gensim==3.4.0
 Keras==2.2.0
 progressbar2==3.38.0
