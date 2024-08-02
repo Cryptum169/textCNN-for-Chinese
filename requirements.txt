@@ -2,6 +2,6 @@ jieba==0.39
 nltk==3.6.6
 numpy==1.22.0
 gensim==3.4.0
-Keras==2.2.0
+Keras==2.13.1
 progressbar2==3.38.0
 scikit_learn==0.19.1
